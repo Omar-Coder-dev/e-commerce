@@ -3,7 +3,7 @@
 import GetUserToken from "images/GetUserToken";
 
 async function fetchWithToken(url: string, options: RequestInit = {}) {
-    const token: any = await GetUserToken();
+    const token: string | null = await GetUserToken();
     if (!token) throw new Error("User is not authenticated");
 
     options.headers = {
