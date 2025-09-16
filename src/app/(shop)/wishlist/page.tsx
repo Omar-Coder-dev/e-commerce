@@ -5,12 +5,10 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Heart, ShoppingBag, ShoppingCart, Star, ArrowLeft, Trash2 } from 'lucide-react'
+import { Heart, ShoppingBag, ShoppingCart, Star, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import { GetWishList, RemoveFromWishList } from 'images/WishListAction/WishListAction'
 import { AddProductToCart } from 'images/CartAction/CartAction'
-import AddCartBtn from 'images/app/_Components/ProductCard/AddCartBtn'
-
 export default function WishlistPage() {
   const [wishlistItems, setWishlistItems] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
