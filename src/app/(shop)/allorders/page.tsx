@@ -1,4 +1,5 @@
 'use client'
+
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -7,46 +8,45 @@ import { Card, CardContent } from '@/components/ui/card'
 import { ShoppingBag, Calendar, ArrowLeft, CheckCircle, Clock, Truck, User, CreditCard, Banknote } from 'lucide-react'
 import { getMyOrders } from 'images/OrderAction/OrderAction'
 import { useSession } from 'next-auth/react'
+import { Order } from 'images/types/orders.type'
 
 export default function MyOrders() {
   const { data: session } = useSession()
-  const [orders, setOrders] = useState<any[]>([])
+  const [orders, setOrders] = useState<Order[]>([])
   const [ordersLoading, setOrdersLoading] = useState(true)
-useEffect(() => {
-  console.log('Session data:', session)
-}, [session])
 
   useEffect(() => {
     async function getAllOrdersData() {
       setOrdersLoading(true)
       const data = await getMyOrders()
-      
-      const sortedOrders = (data || []).sort((a: any, b: any) => {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      })
-      
+
+      const sortedOrders = (data || []).sort(
+        (a: Order, b: Order) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+
       setOrders(sortedOrders)
       setOrdersLoading(false)
     }
     getAllOrdersData()
   }, [])
 
-  const formatDateTime = (date: string | Date) => {
+  const formatDateTime = (date: string) => {
     const dateObj = new Date(date)
     const dateStr = dateObj.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     })
     const timeStr = dateObj.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     })
     return { date: dateStr, time: timeStr }
   }
 
-  const getStatus = (order: any) => {
+  const getStatus = (order: Order) => {
     if (order.isDelivered) {
       return { text: 'Delivered', icon: CheckCircle, color: 'bg-green-100 text-green-800' }
     }
@@ -56,18 +56,11 @@ useEffect(() => {
     return { text: 'Processing', icon: Clock, color: 'bg-yellow-100 text-yellow-800' }
   }
 
-  const getPaymentMethod = (order: any) => {
-    // Adjust these conditions based on your actual order data structure
-    if (order.paymentMethodType === 'card' || order.paymentMethod === 'card' || order.isPaidWithCard) {
+  const getPaymentMethod = (order: Order) => {
+    if (order.paymentMethodType === 'card') {
       return { text: 'Credit Card', icon: CreditCard }
     }
-    if (order.paymentMethodType === 'cash' || order.paymentMethod === 'cash' || order.paymentMethodType === 'cod') {
-      return { text: 'Cash on Delivery', icon: Banknote }
-    }
-    // Default fallback - you might want to adjust this based on your business logic
-    return order.isPaid ? 
-      { text: 'Credit Card', icon: CreditCard } : 
-      { text: 'Cash on Delivery', icon: Banknote }
+    return { text: 'Cash on Delivery', icon: Banknote }
   }
 
   const isEmpty = !orders.length
@@ -143,10 +136,15 @@ useEffect(() => {
                     </div>
 
                     <div className="space-y-3">
-                      {order.cartItems.map((item: any, index: any) => (
+                      {order.cartItems.map((item, index) => (
                         <div key={index} className="flex gap-4">
                           <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
-                            <Image src={item.product.imageCover} alt={item.product.title} fill className="object-cover" />
+                            <Image
+                              src={item.product.imageCover}
+                              alt={item.product.title}
+                              fill
+                              className="object-cover"
+                            />
                           </div>
 
                           <div className="flex-1">
@@ -154,8 +152,13 @@ useEffect(() => {
                             <p className="text-md text-gray-500">{item.product.category.name}</p>
                             <div className="flex items-center gap-1 mt-1">
                               <div className="flex text-yellow-400">
-                                {[1, 2, 3, 4, 5].map(i => (
-                                  <i key={i} className={`fas fa-star text-xs ${i <= item.product.ratingsAverage ? '' : 'text-gray-300'}`}></i>
+                                {[1, 2, 3, 4, 5].map((i) => (
+                                  <i
+                                    key={i}
+                                    className={`fas fa-star text-xs ${
+                                      i <= item.product.ratingsAverage ? '' : 'text-gray-300'
+                                    }`}
+                                  ></i>
                                 ))}
                               </div>
                               <span className="text-md text-gray-500">{item.product.ratingsAverage}</span>
