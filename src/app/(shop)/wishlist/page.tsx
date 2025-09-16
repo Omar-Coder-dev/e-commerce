@@ -9,6 +9,7 @@ import { Heart, ShoppingBag, ShoppingCart, Star, ArrowLeft, Trash2 } from 'lucid
 import { toast } from 'sonner'
 import { GetWishList, RemoveFromWishList } from 'images/WishListAction/WishListAction'
 import { AddProductToCart } from 'images/CartAction/CartAction'
+import AddCartBtn from 'images/app/_Components/ProductCard/AddCartBtn'
 
 export default function WishlistPage() {
   const [wishlistItems, setWishlistItems] = useState<any[]>([])
