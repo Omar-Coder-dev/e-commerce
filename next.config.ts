@@ -10,8 +10,6 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-    // Alternative: if you prefer the older domains format
-    // domains: ['ecommerce.routemisr.com'],
   },
 }
 
