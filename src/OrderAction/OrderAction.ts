@@ -2,47 +2,37 @@
 
 import GetUserToken from "images/GetUserToken"
 
-export interface ShippingData {
-    phone: string
-    details: string
-    city: string
-}
-
-async function fetchWithToken(url: string, options: RequestInit) {
-    const token = await GetUserToken()
-    if (!token) throw new Error("User is not authenticated")
-    
-    return fetch(url, {
-        ...options,
+export async function CheckOutPayment(cartId: string, shippingData: {phone: string, details: string, city: string}) {
+    const token: any = await GetUserToken()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/orders/checkout-session/${cartId}?url=${process.env.NEXT_URL}`, {
+        method: 'POST',
+        body: JSON.stringify({
+            "shippingaddress": shippingData
+        }),
         headers: {
             'Content-Type': 'application/json',
-            token,
-            ...(options.headers || {})
+            token: token
         }
     })
+    const data = await res.json()
+    return data
 }
 
-export async function CheckOutPayment(cartId: string, shippingData: ShippingData) {
-    const res = await fetchWithToken(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/orders/checkout-session/${cartId}?url=${process.env.NEXT_URL}`,
-        {
-            method: 'POST',
-            body: JSON.stringify({ shippingaddress: shippingData })
-        }
-    )
-    return res.json()
-}
-
-export async function createCashOrder(cartId: string, shippingData: ShippingData) {
+export async function createCashOrder(cartId: string, shippingData: {phone: string, details: string, city: string}) {
+    const token: any = await GetUserToken()
     try {
-        const res = await fetchWithToken(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/orders/${cartId}`,
-            {
-                method: 'POST',
-                body: JSON.stringify({ shippingaddress: shippingData })
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/orders/${cartId}`, {
+            method: 'POST',
+            body: JSON.stringify({
+                "shippingaddress": shippingData
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                token: token
             }
-        )
-        return res.json()
+        })
+        const data = await res.json()
+        return data
     } catch (error) {
         console.error('Error creating cash order:', error)
         return { status: 'error', message: 'Failed to create cash order' }
@@ -50,17 +40,26 @@ export async function createCashOrder(cartId: string, shippingData: ShippingData
 }
 
 export async function getMyOrders() {
-    const userRes = await fetchWithToken(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/users/getMe`,
-        { method: 'GET' }
-    )
+    const token: any = await GetUserToken()
+    if (!token) {
+        throw new Error("User is not authenticated");
+    }
+    
+    const userRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/users/getMe`, {
+        headers: {
+            'Content-Type': 'application/json',
+            token: token
+        }
+    })
     const userData = await userRes.json()
     const userId = userData.data._id
-
-    const res = await fetchWithToken(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/orders/user/${userId}`,
-        { method: 'GET' }
-    )
+    
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/orders/user/${userId}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            token: token
+        }
+    })
     const data = await res.json()
     return data.data || data
 }
