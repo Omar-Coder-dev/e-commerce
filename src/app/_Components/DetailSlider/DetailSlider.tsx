@@ -16,18 +16,20 @@ export default function DetailSlider({ images }: { images: string[] }) {
   };
 
   return (
-    <Slider {...settings}>
-      {images.map((image) => (
-        <div key={image}>
-          <Image
-            src={image}
-            alt="product"
-            width={1000}
-            height={1000}
-            className="w-full h-[450px] object-cover rounded-2xl shadow-lg"
-          />
-        </div>
-      ))}
-    </Slider>
+    <div className="w-full">
+      <Slider {...settings}>
+        {images.map((image) => (
+          <div key={image} className="px-2">
+            <Image
+              src={image}
+              alt="product"
+              width={1000}
+              height={1000}
+              className="w-full h-64 sm:h-80 md:h-[450px] object-cover rounded-xl shadow-lg"
+            />
+          </div>
+        ))}
+      </Slider>
+    </div>
   );
 }
