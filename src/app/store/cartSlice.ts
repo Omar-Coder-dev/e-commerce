@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+// Replace these imports with your actual paths
 import { Cart, CartData } from 'images/types/cart.type';
 import { 
   getCartData, 
@@ -42,53 +43,55 @@ const validateCartData = (cart: Cart): Cart => {
 };
 
 // Async thunks
-export const fetchCart = createAsyncThunk(
+export const fetchCart = createAsyncThunk<Cart, void, { rejectValue: string }>(
   'cart/fetchCart',
   async (_, { rejectWithValue }) => {
     try {
       const data: CartData = await getCartData();
       return validateCartData(data.data);
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch cart');
+    } catch (error) {
+      const err = error as Error;
+      return rejectWithValue(err.message || 'Failed to fetch cart');
     }
   }
 );
 
-export const addToCart = createAsyncThunk(
+export const addToCart = createAsyncThunk<Cart, string, { rejectValue: string }>(
   'cart/addToCart',
-  async (productId: string, { rejectWithValue }) => {
+  async (productId, { rejectWithValue }) => {
     try {
       const data = await AddProductToCart(productId);
       if (data.status === 'success') {
         return validateCartData(data.data);
       }
       return rejectWithValue(data.message || 'Failed to add product to cart');
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to add product to cart');
+    } catch (error) {
+      const err = error as Error;
+      return rejectWithValue(err.message || 'Failed to add product to cart');
     }
   }
 );
 
-export const removeFromCart = createAsyncThunk(
+export const removeFromCart = createAsyncThunk<Cart, string, { rejectValue: string }>(
   'cart/removeFromCart',
-  async (productId: string, { rejectWithValue }) => {
+  async (productId, { rejectWithValue }) => {
     try {
       const data = await RemoveProductFromCart(productId);
       if (data.status === 'success') {
         return validateCartData(data.data);
       }
       return rejectWithValue(data.message || 'Failed to remove product from cart');
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to remove product from cart');
+    } catch (error) {
+      const err = error as Error;
+      return rejectWithValue(err.message || 'Failed to remove product from cart');
     }
   }
 );
 
-export const updateQuantity = createAsyncThunk(
+export const updateQuantity = createAsyncThunk<Cart, { productId: string; quantity: number }, { rejectValue: string }>(
   'cart/updateQuantity',
-  async ({ productId, quantity }: { productId: string; quantity: number }, { rejectWithValue }) => {
+  async ({ productId, quantity }, { rejectWithValue }) => {
     try {
-      // Validate quantity before sending
       const validQuantity = Math.max(1, Number(quantity));
       if (isNaN(validQuantity)) {
         return rejectWithValue('Invalid quantity');
@@ -99,13 +102,14 @@ export const updateQuantity = createAsyncThunk(
         return validateCartData(data.data);
       }
       return rejectWithValue(data.message || 'Failed to update quantity');
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to update quantity');
+    } catch (error) {
+      const err = error as Error;
+      return rejectWithValue(err.message || 'Failed to update quantity');
     }
   }
 );
 
-export const clearCart = createAsyncThunk(
+export const clearCart = createAsyncThunk<Cart | null, void, { rejectValue: string }>(
   'cart/clearCart',
   async (_, { rejectWithValue }) => {
     try {
@@ -114,8 +118,9 @@ export const clearCart = createAsyncThunk(
         return null;
       }
       return rejectWithValue(data.message || 'Failed to clear cart');
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to clear cart');
+    } catch (error) {
+      const err = error as Error;
+      return rejectWithValue(err.message || 'Failed to clear cart');
     }
   }
 );
@@ -127,7 +132,6 @@ const cartSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    // Add a manual cart validation reducer
     validateCart: (state) => {
       if (state.cart) {
         state.cart = validateCartData(state.cart);
