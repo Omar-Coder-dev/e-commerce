@@ -3,7 +3,7 @@ import GetUserToken from "images/GetUserToken"
 import { CartData } from "images/types/cart.type";
 
 export async function getCartData() {
-    const token: any = await GetUserToken()
+    const token: string | null = await GetUserToken()
     if (!token) {
         throw new Error("User is not authenticated");
     }
@@ -17,7 +17,7 @@ export async function getCartData() {
 }
 
 export async function AddProductToCart(id: string) {
-    const token: any = await GetUserToken()
+    const token: string | null = await GetUserToken()
     if (!token) {
         throw new Error("User is not authenticated");
     }
@@ -35,7 +35,7 @@ export async function AddProductToCart(id: string) {
 }
 
 export async function RemoveProductFromCart(id: string) {
-    const token: any = await GetUserToken()
+    const token: string | null = await GetUserToken()
     if (!token) {
         throw new Error("User is not authenticated");
     }
@@ -50,7 +50,7 @@ export async function RemoveProductFromCart(id: string) {
 }
 
 export async function ClearCart() {
-    const token: any = await GetUserToken()
+    const token: string | null = await GetUserToken()
     if (!token) {
         throw new Error("User is not authenticated");
     }
@@ -65,7 +65,7 @@ export async function ClearCart() {
 }
 
 export async function UpdateProductQuantity(id: string, quantity: number) {
-        const token: any = await GetUserToken()
+        const token: string | null = await GetUserToken()
     if (!token) {
         throw new Error("User is not authenticated");
     }
