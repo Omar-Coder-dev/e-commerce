@@ -1,57 +1,77 @@
 'use client'
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { ClearCart, getCartData, RemoveProductFromCart, UpdateProductQuantity } from 'images/CartAction/CartAction';
-import { Minus, Plus, Trash2, ShoppingCart, Shield, ArrowLeft } from 'lucide-react';
-import { Cart, CartData, ProductElement } from 'images/types/cart.type';
-import { toast } from 'sonner';
-import Link from 'next/link';
+import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import {
+  ClearCart,
+  getCartData,
+  RemoveProductFromCart,
+  UpdateProductQuantity,
+} from 'images/CartAction/CartAction'
+import {
+  Minus,
+  Plus,
+  Trash2,
+  ShoppingCart,
+  Shield,
+  ArrowLeft,
+} from 'lucide-react'
+import { Cart, CartData, ProductElement } from 'images/types/cart.type'
+import { toast } from 'sonner'
+import Link from 'next/link'
 
 export default function CartUI() {
-  const [cart, setCart] = useState<Cart>();
-  const [cartLoading, setCartLoading] = useState(true);
+  const [cart, setCart] = useState<Cart>()
+  const [cartLoading, setCartLoading] = useState(true)
 
   useEffect(() => {
     async function getAllCartData() {
-      setCartLoading(true);
-      const data: CartData = await getCartData();
-      setCart(data.data);
-      setCartLoading(false);
+      try {
+        setCartLoading(true)
+        const data: CartData = await getCartData()
+        if (data?.data) {
+          setCart(data.data)
+        } else {
+          setCart(undefined)
+        }
+      } catch (error) {
+        console.error('Cart fetch error:', error)
+        setCart(undefined)
+      } finally {
+        setCartLoading(false)
+      }
     }
-    getAllCartData();
-  }, []);
+    getAllCartData()
+  }, [])
 
-
-async function deleteProduct(id: string) {
-  const data = await RemoveProductFromCart(id);
-  if (data.status === 'success') {
-    toast.success('Product removed from cart', { position: 'top-center' });
-    window.location.reload(); // <-- full page reload
+  async function deleteProduct(id: string) {
+    const data = await RemoveProductFromCart(id)
+    if (data.status === 'success') {
+      toast.success('Product removed from cart', { position: 'top-center' })
+      window.location.reload()
+    }
   }
-}
 
-async function clearCartData() {
-  const data = await ClearCart();
-  if (data.message === 'success') {
-    toast.success('Cart cleared', { position: 'top-center' });
-    window.location.reload(); // <-- full page reload
+  async function clearCartData() {
+    const data = await ClearCart()
+    if (data.message === 'success') {
+      toast.success('Cart cleared', { position: 'top-center' })
+      window.location.reload()
+    }
   }
-}
-
 
   async function updateProductCount(id: string, quantity: number) {
     setCartLoading(true)
     const data = await UpdateProductQuantity(id, quantity)
-    if (data.status == 'success') {
+    if (data.status === 'success') {
       setCart(data.data)
     }
     setCartLoading(false)
   }
 
-  const isEmpty = !cart?.products?.length;
+  const isEmpty = !cart?.products?.length
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -63,7 +83,9 @@ async function clearCartData() {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <ShoppingCart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-600 mb-2">Your cart is empty</h2>
+            <h2 className="text-2xl font-bold text-gray-600 mb-2">
+              Your cart is empty
+            </h2>
             <Link href="/">
               <Button className="mt-4">Continue Shopping</Button>
             </Link>
@@ -71,7 +93,6 @@ async function clearCartData() {
         </div>
       ) : (
         <div className="max-w-6xl mx-auto px-4">
-
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Shopping Cart</h1>
@@ -79,43 +100,68 @@ async function clearCartData() {
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
-
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
               {cart.products.map((item: ProductElement) => (
                 <Card key={item._id}>
                   <CardContent className="p-4">
                     <div className="flex gap-4">
-
                       {/* Image */}
                       <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
-                        <Image src={item.product.imageCover} alt={item.product.title} fill className="object-cover" />
+                        <Image
+                          src={item.product.imageCover}
+                          alt={item.product.title}
+                          fill
+                          className="object-cover"
+                        />
                       </div>
 
                       {/* Details */}
                       <div className="flex-1">
-                        <h3 className="font-medium text-md">{item.product.title}</h3>
-                        <p className="text-md text-gray-500">{item.product.category.name}</p>
+                        <h3 className="font-medium text-md">
+                          {item.product.title}
+                        </h3>
+                        <p className="text-md text-gray-500">
+                          {item.product.category.name}
+                        </p>
                         <div className="flex items-center gap-1 mt-1">
                           <div className="flex text-yellow-400">
-                            {[1, 2, 3, 4, 5].map(i => (
-                              <i key={i} className={`fas fa-star text-xs ${i <= item.product.ratingsAverage ? '' : 'text-gray-300'}`}></i>
+                            {[1, 2, 3, 4, 5].map((i) => (
+                              <i
+                                key={i}
+                                className={`fas fa-star text-xs ${
+                                  i <= item.product.ratingsAverage
+                                    ? ''
+                                    : 'text-gray-300'
+                                }`}
+                              ></i>
                             ))}
                           </div>
-                          <span className="text-md text-gray-500">{item.product.ratingsAverage}</span>
+                          <span className="text-md text-gray-500">
+                            {item.product.ratingsAverage}
+                          </span>
                         </div>
                       </div>
 
                       {/* Price & Controls */}
                       <div className="text-right">
-                        <div className="font-bold text-lg">{(item.price * item.count).toFixed(2)} EGP</div>
-                        <div className="text-xs text-gray-400">{item.price.toFixed(2)} each</div>
+                        <div className="font-bold text-lg">
+                          {(item.price * item.count).toFixed(2)} EGP
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          {item.price.toFixed(2)} each
+                        </div>
 
                         {/* Quantity */}
                         <div className="flex items-center border rounded mt-2">
                           {item.count > 1 ? (
                             <Button
-                              onClick={() => updateProductCount(item.product._id, item.count -= 1)}
+                              onClick={() =>
+                                updateProductCount(
+                                  item.product._id,
+                                  item.count - 1
+                                )
+                              }
                               size="sm"
                               variant="ghost"
                               className="h-8 w-8 p-0"
@@ -136,7 +182,9 @@ async function clearCartData() {
                           <span className="px-2 text-sm">{item.count}</span>
 
                           <Button
-                            onClick={() => updateProductCount(item.product._id, item.count += 1)}
+                            onClick={() =>
+                              updateProductCount(item.product._id, item.count + 1)
+                            }
                             size="sm"
                             variant="ghost"
                             className="h-8 w-8 p-0"
@@ -145,7 +193,12 @@ async function clearCartData() {
                           </Button>
                         </div>
 
-                        <Button onClick={() => deleteProduct(item.product._id)} size="sm" variant="ghost" className="text-red-500 mt-2 p-1">
+                        <Button
+                          onClick={() => deleteProduct(item.product._id)}
+                          size="sm"
+                          variant="ghost"
+                          className="text-red-500 mt-2 p-1"
+                        >
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
@@ -157,9 +210,18 @@ async function clearCartData() {
               {/* Actions */}
               <div className="flex justify-between pt-4">
                 <Link href="/">
-                  <Button variant="outline"><ArrowLeft className="h-4 w-4 mr-2" />Continue</Button>
+                  <Button variant="outline">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Continue
+                  </Button>
                 </Link>
-                <Button onClick={clearCartData} variant="outline" className="text-red-600">Clear Cart</Button>
+                <Button
+                  onClick={clearCartData}
+                  variant="outline"
+                  className="text-red-600"
+                >
+                  Clear Cart
+                </Button>
               </div>
             </div>
 
@@ -196,11 +258,12 @@ async function clearCartData() {
                     </Button>
                   </Link>
 
-
                   {/* Promo */}
                   <div className="flex gap-2">
                     <Input placeholder="Promo code" className="flex-1" />
-                    <Button variant="outline" size="sm">Apply</Button>
+                    <Button variant="outline" size="sm">
+                      Apply
+                    </Button>
                   </div>
 
                   {/* Trust badges */}
@@ -225,5 +288,5 @@ async function clearCartData() {
         </div>
       )}
     </div>
-  );
+  )
 }
