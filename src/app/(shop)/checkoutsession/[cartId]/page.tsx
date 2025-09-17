@@ -59,6 +59,12 @@ export default function CheckOutSession() {
         if (data.session?.url) {
           toast.success("Redirecting to payment page...")
           window.open(data.session.url, "_blank")
+          
+          // Add refresh after a short delay for card payments
+          setTimeout(() => {
+            toast.success("Payment initiated! Refreshing page...")
+            window.location.reload()
+          }, 2000)
         } else {
           toast.error("Failed to create payment session")
         }
@@ -67,6 +73,11 @@ export default function CheckOutSession() {
         if (data.status === "success") {
           toast.success("Order placed successfully!")
           setOrderSuccess(true)
+          
+          // Refresh after showing success message for cash orders
+          setTimeout(() => {
+            window.location.reload()
+          }, 1500)
         } else {
           toast.error("Failed to create order: " + (data.message || "Unknown error"))
         }
@@ -76,6 +87,11 @@ export default function CheckOutSession() {
     }
 
     setcheckOutLoading(false)
+  }
+
+  const handleViewOrders = () => {
+    // Refresh before navigating to orders
+    window.location.href = "/allorders"
   }
 
   return (
@@ -188,11 +204,12 @@ export default function CheckOutSession() {
                   </Link>
 
                   {orderSuccess ? (
-                    <Link href="/allorders">
-                      <Button className="rounded-xl bg-green-600 hover:bg-green-700 text-white shadow-md px-6 py-2">
-                        View Orders
-                      </Button>
-                    </Link>
+                    <Button
+                      onClick={handleViewOrders}
+                      className="rounded-xl bg-green-600 hover:bg-green-700 text-white shadow-md px-6 py-2"
+                    >
+                      View Orders
+                    </Button>
                   ) : (
                     <Button
                       type="submit"
