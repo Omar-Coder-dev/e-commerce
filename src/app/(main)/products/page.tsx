@@ -87,7 +87,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </Badge>
         </div>
 
-        {/* Breadcrumb Navigation */}
+        {/* Breadcrumb Navigation - FIXED */}
         <div className="flex items-center gap-2 mb-8 text-sm text-gray-600">
           <Link href="/" className="hover:text-gray-900 transition-colors">
             Home
@@ -103,7 +103,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             </>
           ) : categoryDetails ? (
             <>
-              <Link href="/categories" className="hover:text-gray-900 transition-colors">
+              {/* CHANGED: /categories to /category */}
+              <Link href="/category" className="hover:text-gray-900 transition-colors">
                 Categories
               </Link>
               <span>→</span>
@@ -165,9 +166,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </div>
         )}
 
-        {/* Back Navigation */}
+        {/* Back Navigation - FIXED */}
         <div className="flex justify-center mt-12">
-          <Link href={brandDetails ? "/brands" : categoryDetails ? "/categories" : "/"}>
+          <Link href={brandDetails ? "/brands" : categoryDetails ? "/category" : "/"}>
             <Card className="inline-block bg-white/90 hover:bg-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer">
               <CardContent className="px-6 py-3">
                 <span className="text-gray-700 font-medium">
